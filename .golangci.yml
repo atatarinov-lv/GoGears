@@ -1,0 +1,56 @@
+run:
+  tests: true
+  modules-download-mode: mod
+
+linters:
+  presets:
+    - bugs
+    - comment
+    - complexity
+    - error
+    - format
+    - import
+    - metalinter
+    - module
+    - performance
+    - sql
+    - style
+    - test
+    - unused
+  disable:
+    - varnamelen
+    - depguard
+    - exhaustruct
+    - nlreturn
+    - gochecknoglobals
+    - tagliatelle
+    - ireturn
+    - gochecknoinits
+    - funlen
+
+linters-settings:
+  testifylint:
+    enable-all: true
+    disable:
+      - require-error
+      - suite-thelper
+
+issues:
+  exclude-dirs:
+    - vendor
+    - docs
+
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+        - goconst
+        - funlen
+        - err113
+        - noctx
+        - wrapcheck
+        - testpackage
+        - forcetypeassert
+        - wsl
+        - gosec
+        - unparam
