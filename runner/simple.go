@@ -7,23 +7,12 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-// A Runner is a runner to start processing.
-type Runner func(ctx context.Context) error
-
-// New creates a new runner and returns it and a channel for getting results from function _process_.
-func New[In any, Out any](
+func NewSimple[In any](
 	maxWorkers int,
 	input <-chan In,
-	process func(context.Context, In) (Out, error),
-) (
-	Runner,
-	chan Out,
-) {
-	output := make(chan Out)
-
+	process func(context.Context, In),
+) Runner {
 	runner := func(ctx context.Context) error {
-		defer close(output)
-
 		sem := semaphore.NewWeighted(int64(maxWorkers))
 
 		// wait for already started goroutines to finish
@@ -46,18 +35,11 @@ func New[In any, Out any](
 
 				go func(s In) {
 					defer sem.Release(1)
-
-					if result, err := process(ctx, s); err == nil {
-						select {
-						case <-ctx.Done():
-							return
-						case output <- result:
-						}
-					}
+					process(ctx, s)
 				}(inputObj)
 			}
 		}
 	}
 
-	return runner, output
+	return runner
 }
